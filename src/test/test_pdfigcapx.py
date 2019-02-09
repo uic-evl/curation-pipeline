@@ -1,13 +1,20 @@
-from PDFigCapX import PDFigCapX
+import sys
 from os import getcwd
-from os.path import join
+from os.path import join, abspath
 
 current_folder = getcwd()
-chrome_driver_path = join(current_folder, 'chromedriver_win32','chromedriver.exe')
-xpdf_pdftohtml_path = join(current_folder, 'xpdf', 'bin64', 'pdftohtml.exe')
-imagemagick_convert_path = join(current_folder, 'ImageMagick-7.0.8-26-portable-Q16-x86', 'convert.exe')
-input_path = join(current_folder, 'sample_data_for_Juan')
-output_path = join(current_folder, 'output')
+source_folder = abspath(join(current_folder, '..'))
+sys.path.append(source_folder)
+
+from PDFigCapX import PDFigCapX
+
+dependecies_folder = abspath(join(current_folder, '..', '..', 'dependencies', 'win')) 
+chrome_driver_path = join(dependecies_folder, 'chromedriver_win32','chromedriver.exe')
+xpdf_pdftohtml_path = join(dependecies_folder, 'xpdf', 'bin64', 'pdftohtml.exe')
+imagemagick_convert_path = join(dependecies_folder, 'ImageMagick-7.0.8-26-portable-Q16-x86', 'convert.exe')
+
+input_path = abspath(join(current_folder, '..', '..', 'input'))
+output_path = abspath(join(current_folder, '..', '..', 'output'))
 
 p = PDFigCapX(chrome_driver_path, xpdf_pdftohtml_path, imagemagick_convert_path)
 total_files, total_pdf, total_successes = p.extract(input_path, output_path)

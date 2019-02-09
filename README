@@ -26,6 +26,9 @@ Dependencies
   Mac further needs the installation of Ghostscript
   https://pages.uoregon.edu/koch/
 
+- FigSplit
+  conda install -c anaconda requests
+
 Contact
 Juan Trelles Trabucco jtrell2@uic.edu
 Pengyuan Li pengyuan@udel.edu

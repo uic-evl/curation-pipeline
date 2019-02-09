@@ -36,7 +36,7 @@ class PDFigCapX():
         total_pdf += 1
         pdf_path = join(_input_path, pdf)
         images = renderer.render_pdf(pdf_path, self.imagemagick_convert_path)
-        
+
         if self.__convert_pdf_to_html(xpdf_output_path_prefix, pdf, pdf_path):
           if self.__process_figures(images, _input_path, pdf, xpdf_output_path_prefix, _output_path):
             success += 1
@@ -59,7 +59,7 @@ class PDFigCapX():
 
 
   def __extract_figures(self, _input_path, _pdf, _xpdf_output_path):
-    # i don't get the logic behind wrong_count and flag.    
+    # i don't get the logic behind wrong_count and flag.
     flag = 0
     wrong_count = 0
     figures = []
@@ -89,8 +89,8 @@ class PDFigCapX():
     figures, info, flag = self.__extract_figures(_input_path, _pdf, _xpdf_output_path)
     if flag == 0: # there was an error in the extraction
       return False
-      
-    
+
+
     data[_pdf]['fig_no'] = info['fig_no_est']
     # the output images and captions are stored in a folder with the pdf name
     output_file_path = join(_output_path, _pdf[:-4])
@@ -133,7 +133,7 @@ class PDFigCapX():
                 'caption_bb': [],
                 'caption_text': []
             })
-          fig_extracted = page_fig.crop([int(bbox[0][0]*png_ratio), int(bbox[0][1]*png_ratio), 
+          fig_extracted = page_fig.crop([int(bbox[0][0]*png_ratio), int(bbox[0][1]*png_ratio),
                           int((bbox[0][0]+bbox[0][2])*png_ratio), int((bbox[0][1]+bbox[0][3])*png_ratio)])
           fig_filepath = join(output_file_path, '%d_%d.jpg' % (page_no, order_no))
           fig_extracted.save(fig_filepath)

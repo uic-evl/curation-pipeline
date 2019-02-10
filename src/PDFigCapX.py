@@ -10,7 +10,7 @@ from os.path import join, isdir
 from pprint import pprint
 
 PDF_OUTPUT_FOLDER = 'xpdf_'
-LOG_FILE = 'log.txt'
+LOG_FILE = 'PDFigCapXlog.txt'
 MAX_WRONG_COUNT = 5
 
 class PDFigCapX():
@@ -71,7 +71,7 @@ class PDFigCapX():
         flag = 1
       except Exception as e:
         flag = 0
-        _wrong_count += 1
+        wrong_count += 1
         time.sleep(5)
         # info['fig_no_est'] = 0
         self.log_file.write("%s\n%s" % (_pdf, e))
@@ -121,7 +121,11 @@ class PDFigCapX():
             })
             caption_output_filepath = join(output_file_path, '%d_%d.txt' % (page_no, order_no))
             with open(caption_output_filepath, 'w') as capoutput:
-              capoutput.write(str(bbox[1][1]))
+              #print len(bbox[1][1])
+              #print bbox[1][1]
+              #capoutput.write(str(bbox[1][1]))
+              content = ''.join(bbox[1][1])
+              capoutput.write(content.encode('utf16'))
           else:
             data[_pdf]['figures'].append(
               {

@@ -8,11 +8,19 @@ sys.path.append(source_folder)
 
 from Task import Task
 
-insert_document_service_uri = 'http://runachay.evl.uic.edu:3020/api/insertFromPipe'
+insert_document_service_uri = 'http://localhost:3020/api/insertFromPipe'
+send_task_service_uri = 'http://localhost:3020/api/sendPipeTask'
 input_test_document_path = abspath(join(current_folder, '..', '..', 'output', 'p15350224'))
-t = Task(insert_document_service_uri)
+t = Task(insert_document_service_uri, send_task_service_uri)
 
 d = t.create_document(input_test_document_path)
-#res = t.insert_document(d)
+saved_document = t.insert_document(d)
+
+if saved_document:
+    task_result = t.send_task(saved_document['_id'], saved_document['name'], 'uic', 'uic')
+    if task_result:
+        print "Great!"
+    else:
+        print "Too bad"
+
 #print(str(res))
-print d["figures"][0]["subfigures"][0]["uri"]

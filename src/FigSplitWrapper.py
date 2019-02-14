@@ -30,6 +30,8 @@ class FigSplitWrapper:
                     if r.status_code == 200:
                         self.__download_splitted_content(_folder_path, r, figure)
                         successful_splits += 1
+                    else:
+                        print r.status_code
                     # else do what?
                 except Exception as e:
                     print 'Unexpected error: %s' % exc_info()[0]

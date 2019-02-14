@@ -39,4 +39,4 @@ p = Pipeline(config)
 input_documents = listdir(input_folder)
 for input_doc in input_documents:
     input_document_path = join(input_folder, input_doc)
-    p.process_file(input_document_path, output_folder)
+    result = p.process_file(input_document_path, output_folder)

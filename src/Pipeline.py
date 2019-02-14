@@ -63,11 +63,9 @@ class Pipeline:
         document = task_service.create_document(document_folder_path)
         saved_document = task_service.insert_document(document)
         if saved_document:
-            print "Document inserted in the database"
             task = task_service.send_task(saved_document['_id'], saved_document['name'],
                                                   self.organization, self.group_name)
             if task:
-                print "Task created"
                 return task
             else:
                 error =  "Error creating task"

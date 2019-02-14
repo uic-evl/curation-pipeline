@@ -4,10 +4,8 @@ from PIL import Image
 import numpy as np
 import tempfile
 
-output_dpi = str(72)
-
-
-def render_pdf(filename, imagemagick_convert_path):
+def render_pdf(filename, imagemagick_convert_path, dpi=150):
+    output_dpi = str(dpi)
     """
         This function renders the document unsing imagemagick and returns a list of images, one for each page.
         The images are PIL Image type.

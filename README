@@ -29,6 +29,10 @@ Dependencies
 - FigSplit
   conda install -c anaconda requests
 
+Run on tinman
+cd /usa/jtrell2/Curation-Pipeline/src
+python pipeline_runner.py /usa/jtrell2/Curation-Pipeline/src/config.json /eecis/shatkay/UICCollab/PDFs/Pheno_rel /usa/jtrell2/Curation-UI/dist/images 10
+
 Contact
 Juan Trelles Trabucco jtrell2@uic.edu
 Pengyuan Li pengyuan@udel.edu

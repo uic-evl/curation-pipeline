@@ -48,12 +48,21 @@ def main(argv):
     number_docs_processed = 0
     pipeline = Pipeline(config_settings)
     input_documents = listdir(INPUT_PATH)
+
+    log_file_path = join(WEBAPP_DIST_IMAGES_PATH, config_settings['logfilename'])
+    with open(log_file_path, 'a+') as out:
+        out.write('Batch execution:%s ---------------------\n' % (datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        out.write('%d documents found in input folder:\n' % len(input_documents))
+
     for input_doc in input_documents:
         if number_docs_processed < MAX_NUMBER_DOCS_PROCESS:
             input_document_path = join(INPUT_PATH, input_doc)
             if pipeline.process_file(input_document_path, WEBAPP_DIST_IMAGES_PATH):
                 number_docs_processed += 1
         else:
+            with open(log_file_path, 'a+') as out:
+                out.write('Finished execution:%s ---------------------\n' % (datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+                out.write('%d processed\n\n' % len(MAX_NUMBER_DOCS_PROCESS))    
             print "Reached maximum number of documents to process. Stopping execution"
             return
 

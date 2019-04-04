@@ -27,7 +27,7 @@ class Task:
         caption_file_path = join(figsplit_output_path, '%s.txt' % figure[:-4])
         if exists(caption_file_path):
           with open(join(figsplit_output_path, '%s.txt' % figure[:-4]), 'r') as caption_file:
-            caption = caption_file.read().decode('utf16')
+            caption = caption_file.read()
         else:
           caption = 'no caption extracted for this image'
 

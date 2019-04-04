@@ -125,7 +125,7 @@ class PDFigCapX():
               #print bbox[1][1]
               #capoutput.write(str(bbox[1][1]))
               content = ''.join(bbox[1][1])
-              capoutput.write(content.encode('utf16'))
+              capoutput.write(content)
           else:
             data[_pdf]['figures'].append(
               {

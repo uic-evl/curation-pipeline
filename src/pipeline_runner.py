@@ -5,6 +5,7 @@ from pprint import pprint
 from os.path import exists, join
 from os import mkdir, listdir
 from Pipeline import Pipeline
+from datetime import datetime
 
 # sample execution:
 # python pipeline_runner.py /Users/juan/Documents/Projects/Curation-Pipeline/src/config.json /Users/juan/Documents/Projects/Curation-Pipeline/input/pipeline_input /Users/juan/Documents/Projects/Curation-UI/dist/images 10
@@ -62,7 +63,7 @@ def main(argv):
         else:
             with open(log_file_path, 'a+') as out:
                 out.write('Finished execution:%s ---------------------\n' % (datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
-                out.write('%d processed\n\n' % len(MAX_NUMBER_DOCS_PROCESS))    
+                out.write('%d processed\n\n' % len(MAX_NUMBER_DOCS_PROCESS))
             print "Reached maximum number of documents to process. Stopping execution"
             return
 

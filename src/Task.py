@@ -58,7 +58,7 @@ class Task:
     headers = {'Content-Type': 'application/json'}
 
     print self.insert_document_uri
-    response = patch(self.insert_document_uri, data=data, headers=headers)
+    response = patch(self.insert_document_uri, json=data, headers=headers)
 
     if response.status_code == 200:
       return response.json()
@@ -79,4 +79,3 @@ class Task:
     if response.status_code == 200:
       return response.json()
     return None
-

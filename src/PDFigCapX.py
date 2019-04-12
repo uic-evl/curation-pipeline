@@ -146,5 +146,5 @@ class PDFigCapX():
     # pprint(_data[_pdf])
     json_file = join(output_file_path, '%s.json' % _pdf[:-4])
     with open(json_file, 'w') as outfile:
-      json.dump(data[_pdf], outfile)
+      json.dump(data[_pdf], outfile, ensure_ascii=False)
     return True

@@ -57,12 +57,11 @@ class Task:
     # 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
     headers = {'Content-Type': 'application/json'}
 
-    print self.insert_document_uri
-    response = patch(self.insert_document_uri, json=data, headers=headers)
+    response = patch(self.insert_document_uri, data=data, headers=headers)
 
     if response.status_code == 200:
-      return response.json()
-    return None
+      return response.json(), None
+    return None, str(data) + '\n\n' + str(response)
 
   def send_task(self, doc_id, doc_name, organization, group_name):
     data = json.dumps({
@@ -71,8 +70,7 @@ class Task:
       "organization": organization,
       "groupname": group_name
     })
-    print "sent data"
-    print data
+    
     headers = {'Content-Type': 'application/json'}
     response = patch(self.send_task_uri, data=data, headers=headers)
 

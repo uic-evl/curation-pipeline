@@ -63,6 +63,7 @@ class PDFigCapX():
     flag = 0
     wrong_count = 0
     figures = []
+    info = None
 
     while flag == 0 and wrong_count < MAX_WRONG_COUNT:
       try:

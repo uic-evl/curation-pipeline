@@ -61,7 +61,7 @@ class Pipeline:
 
         task_service = Task(self.insert_document_service_uri, self.send_task_service_uri)
         document = task_service.create_document(document_folder_path)
-        saved_document = task_service.insert_document(document)
+        saved_document, saving_error = task_service.insert_document(document)
         if saved_document:
             task = task_service.send_task(saved_document['_id'], saved_document['name'],
                                                   self.organization, self.group_name)
@@ -72,7 +72,7 @@ class Pipeline:
                 self.log_error(_output_folder_container, error)
                 self.remove_folder(document_folder_path, _output_folder_container)
         else:
-            error = "Error inserting document in the database"
+            error = "Error inserting document in the database \n" + saving_error
             self.log_error(_output_folder_container, error)
             self.remove_folder(document_folder_path, _output_folder_container)
         return None
@@ -89,4 +89,3 @@ class Pipeline:
         log_file_path = join(output_folder, self.log_filename)
         with open(log_file_path, 'a+') as out:
             out.write('%s:%s\n' % (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), message))
-

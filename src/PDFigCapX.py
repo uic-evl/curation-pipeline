@@ -1,10 +1,10 @@
-
+import execnet
 import json
 import subprocess
 import time
 import renderer
 
-from xpdf_process import figures_captions_list
+# from xpdf_process import figures_captions_list
 from os import mkdir, listdir
 from os.path import join, isdir
 from pprint import pprint
@@ -58,6 +58,19 @@ class PDFigCapX():
       return False
 
 
+  def py2_wrapper(self, input_path, pdf, xpdf_output_path, chromedriver):
+    print("calling wrapper")
+    gw = execnet.makegateway("popen//python=python2") # env specific
+    channel = gw.remote_exec("""
+      import sys
+      sys.path.append('/home/juan/projects/Curation-Pipeline/compiled')
+      from xpdf_process import figures_captions_list
+      channel.send(figures_captions_list(*channel.receive()))
+    """)
+    channel.send([input_path, pdf, xpdf_output_path, chromedriver])
+    return channel.receive()
+
+
   def __extract_figures(self, _input_path, _pdf, _xpdf_output_path):
     # i don't get the logic behind wrong_count and flag.
     flag = 0
@@ -68,13 +81,17 @@ class PDFigCapX():
     while flag == 0 and wrong_count < MAX_WRONG_COUNT:
       try:
         # process content using the ChromeDriver
-        figures, info = figures_captions_list(_input_path, _pdf, _xpdf_output_path, self.chrome_driver_path)
+        # figures, info = figures_captions_list(_input_path, _pdf, _xpdf_output_path, self.chrome_driver_path)
+        output = self.py2_wrapper(_input_path, _pdf, _xpdf_output_path, self.chrome_driver_path)
+        print(type(output))
+        print(len(output))
         flag = 1
       except Exception as e:
         flag = 0
         wrong_count += 1
         time.sleep(5)
         # info['fig_no_est'] = 0
+        print("error _extract_figures")
         self.log_file.write("%s\n%s" % (_pdf, e))
 
       return figures, info, flag

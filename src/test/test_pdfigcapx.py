@@ -15,10 +15,12 @@ from PDFigCapX import PDFigCapX
 #imagemagick_convert_path = join(dependecies_folder, 'ImageMagick-7.0.8-26-portable-Q16-x86', 'convert.exe')
 
 # mac
-dependecies_folder = abspath(join(current_folder, '..', '..', 'dependencies', 'mac'))
-chrome_driver_path = join(dependecies_folder,'chromedriver')
-xpdf_pdftohtml_path = join(dependecies_folder, 'xpdf-tools-mac-4.00', 'bin64', 'pdftohtml')
-imagemagick_convert_path = join(dependecies_folder, 'ImageMagick-7.0.8', 'bin', 'convert')
+# dependecies_folder = abspath(join(current_folder, '..', '..', 'dependencies', 'mac'))
+chrome_driver_path = join('/usr/bin/chromedriver')
+# xpdf_pdftohtml_path = join(dependecies_folder, 'xpdf-tools-mac-4.00', 'bin64', 'pdftohtml')
+# imagemagick_convert_path = join(dependecies_folder, 'ImageMagick-7.0.8', 'bin', 'convert')
+xpdf_pdftohtml_path = "/home/juan/projects/curation-deployment/xpdf-tools-linux-4.02/bin64/pdftohtml"
+imagemagick_convert_path = "/home/juan/projects/curation-deployment/imagemagick/convert.exe"
 
 input_path = abspath(join(current_folder, '..', '..', 'input'))
 output_path = abspath(join(current_folder, '..', '..', 'output'))

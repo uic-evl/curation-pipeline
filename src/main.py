@@ -1,5 +1,8 @@
 import argparse
 import json
+import os
+from Pipeline import Pipeline
+from datetime import datetime
 
 def main():
     # read args from config_file or STDIN
@@ -47,8 +50,35 @@ def main():
         parser.error('please specify chromedriver, figsplit_url, insert_doc_service and send_task_service')
 
     # start pipeline
-    print(args)
-    print("end")
+    if not os.path.exists(args.output_path):
+        try:
+            os.mkdir(args.output_path)
+        except Exception as e:
+            print("Could not create the output folder path")
+            print(e)
+            return
+
+    number_docs_processed = 0
+    config_settings = vars(args)
+    pipeline = Pipeline(config_settings)
+    input_documents = os.listdir(args.input_path)
+
+    log_file_path = os.path.join(args.output_path, config_settings['logfilename'])
+    with open(log_file_path, 'a+') as out:
+        out.write('Batch execution:%s ---------------------\n' % (datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        out.write('%d documents found in input folder:\n' % len(input_documents))
+
+    for input_doc in input_documents:
+        if number_docs_processed < args.max_docs:
+            input_document_path = os.path.join(args.input_path, input_doc)
+            if pipeline.process_file(input_document_path, args.output_path):
+                number_docs_processed += 1
+        else:
+            with open(log_file_path, 'a+') as out:
+                out.write('Finished execution:%s ---------------------\n' % (datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+                out.write('%d processed\n\n' % len(args.max_docs))
+            print("Reached maximum number of documents to process. Stopping execution")
+            return
 
 if __name__ == "__main__":
     main()

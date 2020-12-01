@@ -1,7 +1,7 @@
 {
-  "chromedriver_path": "/Users/juan/Documents/Projects/Curation-Pipeline/dependencies/mac/chromedriver",
-  "xpdf_pdftohtml_path": "/Users/juan/Documents/Projects/Curation-Pipeline/dependencies/mac/xpdf-tools-mac-4.00/bin64/pdftohtml",
-  "imagemagick_convert_path": "/Users/juan/Documents/Projects/Curation-Pipeline/dependencies/mac/ImageMagick-7.0.8/bin/convert",
+  "chromedriver_path": "/usr/bin/chromedriver",
+  "xpdf_pdftohtml_path": "/home/juan/projects/curation-deployment/xpdf-tools-linux-4.02/bin64/pdftohtml",
+  "imagemagick_convert_path": "/home/juan/projects/curation-deployment/imagemagick/convert.exe",
   "figsplit_url": "https://www.eecis.udel.edu/~compbio/FigSplit",
   "insert_document_service_uri": "http://localhost:3020/api/insertFromPipe",
   "send_task_service_uri": "http://localhost:3020/api/sendPipeTask",

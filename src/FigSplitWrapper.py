@@ -1,7 +1,7 @@
 from requests import post
 from os import listdir, remove
 from os.path import join
-from urllib import urlretrieve
+from urllib.request import urlretrieve
 from sys import exc_info
 from zipfile import ZipFile
 

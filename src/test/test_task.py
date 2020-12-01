@@ -15,9 +15,14 @@ t = Task(insert_document_service_uri, send_task_service_uri)
 
 d = t.create_document(input_test_document_path)
 saved_document = t.insert_document(d)
+print "saved document"
+print saved_document
 
 if saved_document:
-    task_result = t.send_task(saved_document['_id'], saved_document['name'], 'uic', 'uic')
+    print "arg 0 " + saved_document[0]['_id']
+    print "arg 1 " + saved_document[0]['name']
+    task_result = t.send_task(saved_document[0]['_id'], saved_document[0]['name'], 'uic', 'uic')
+    print task_result
     if task_result:
         print "Great!"
     else:

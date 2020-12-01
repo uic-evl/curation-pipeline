@@ -45,9 +45,9 @@ if __name__ == "__main__":
     for pdf in os.listdir(input_path):
         if pdf.endswith('.pdf') and (not pdf.startswith('._')):
             data = {}
-            print join(input_path, pdf)
+            print(join(input_path, pdf))
             images = renderer.render_pdf(join(input_path,pdf))
-            print 'got images'
+            print('got images')
             data[pdf] = {}
             data[pdf]['figures'] = []
             data[pdf]['pages_annotated'] = []
@@ -56,7 +56,7 @@ if __name__ == "__main__":
                 if not os.path.isdir(xpdf_path+pdf[:-4]):
                     std_out = subprocess.check_output([join(folder_init, 'xpdf', 'bin64', 'pdftohtml.exe'), input_path+'\\'+pdf, xpdf_path+pdf[:-4]+'\\'])
             except:
-                print "\nWrong "+pdf+"\n"
+                print("\nWrong "+pdf+"\n")
                 f_log.write(pdf+'\n')
                 pdf_flag = 1
 
@@ -65,10 +65,10 @@ if __name__ == "__main__":
                 wrong_count = 0
                 while flag==0 and wrong_count<5:
                     #try:
-                    print input_path
-                    print pdf
-                    print xpdf_path
-                    print chrome_driver_path
+                    print(input_path)
+                    print(pdf)
+                    print(xpdf_path)
+                    print(chrome_driver_path)
                     figures, info = figures_captions_list(input_path, pdf, xpdf_path, chrome_driver_path)
                     flag = 1
 

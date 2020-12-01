@@ -7,5 +7,6 @@
   "send_task_service_uri": "http://localhost:3020/api/sendPipeTask",
   "organization": "uic",
   "groupname": "uic",
-  "logfilename": "PipelineLog.txt"
+  "logfilename": "PipelineLog.txt",
+  "type": "extract"
 }

@@ -31,10 +31,10 @@ class FigSplitWrapper:
                         self.__download_splitted_content(_folder_path, r, figure)
                         successful_splits += 1
                     else:
-                        print r.status_code
+                        print(r.status_code)
                     # else do what?
                 except Exception as e:
-                    print 'Unexpected error: %s' % exc_info()[0]
+                    print('Unexpected error: %s' % exc_info()[0])
                     logfile.write("%s: problem occurred\n%s" % (figure, e))
 
         logfile.close()

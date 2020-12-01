@@ -53,7 +53,7 @@ class PDFigCapX():
         std_out = subprocess.check_output([self.xpdf_pdftohtml_path, _pdf_path, xpdf_pdf_path])
       return True
     except Exception as e:
-      print "\nWrong %s\n" % _pdf
+      print("\nWrong %s\n" % _pdf)
       self.log_file.write("%s\n%s\n" % (_pdf, e))
       return False
 
@@ -143,7 +143,6 @@ class PDFigCapX():
           fig_filepath = join(output_file_path, '%d_%d.jpg' % (page_no, order_no))
           fig_extracted.save(fig_filepath)
 
-    # pprint(_data[_pdf])
     json_file = join(output_file_path, '%s.json' % _pdf[:-4])
     with open(json_file, 'w') as outfile:
       json.dump(data[_pdf], outfile, ensure_ascii=False)

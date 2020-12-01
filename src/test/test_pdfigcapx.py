@@ -26,4 +26,4 @@ output_path = abspath(join(current_folder, '..', '..', 'output'))
 p = PDFigCapX(chrome_driver_path, xpdf_pdftohtml_path, imagemagick_convert_path)
 total_files, total_pdf, total_successes = p.extract(input_path, output_path)
 
-print "Total files: %d\nTotal PDFs: %d\nTotal successes: %d" % (total_files, total_pdf, total_successes)
+print("Total files: %d\nTotal PDFs: %d\nTotal successes: %d" % (total_files, total_pdf, total_successes))

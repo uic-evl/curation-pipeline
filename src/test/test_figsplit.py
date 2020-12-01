@@ -15,4 +15,4 @@ FIGSPLIT_URL = 'https://www.eecis.udel.edu/~compbio/FigSplit'
 fsw = FigSplitWrapper(FIGSPLIT_URL)
 
 total_figures, total_figures_splitted = fsw.split(input_folder_path)
-print "\nTotal Figures: %d\nTotal splitted: %d" % (total_figures, total_figures_splitted)
+print("\nTotal Figures: %d\nTotal splitted: %d" % (total_figures, total_figures_splitted))

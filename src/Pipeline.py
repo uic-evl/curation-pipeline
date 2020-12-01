@@ -41,7 +41,7 @@ class Pipeline:
         # Extract figures and captions
         fcx = PDFigCapX(self.chromedriver_path, self.xpdf_pdftohtml_path, self.imagemagick_convert_path)
         total_elems, total_figs, total_figs_success = fcx.extract(document_folder_path, document_folder_path)
-        print "PDFigCapx (%d/%d)\n" % (total_figs_success, total_figs)
+        print("PDFigCapx (%d/%d)\n" % (total_figs_success, total_figs))
         if total_figs_success != total_figs:
             error = "PDFigCapX could not process all the content for %s" % filename
             self.log_error(_output_folder_container, error)
@@ -52,7 +52,7 @@ class Pipeline:
         fsw = FigSplitWrapper(self.figsplit_url)
         figcapx_output_path = join(document_folder_path, doc_identifier)
         total_splits, total_splits_success = fsw.split(figcapx_output_path)
-        print "FigSplit (%d/%d)\n" % (total_splits_success, total_splits)
+        print("FigSplit (%d/%d)\n" % (total_splits_success, total_splits))
         if total_splits_success != total_splits:
             error = "FigSplit could not process all the figures for %s" % filename
             self.log_error(_output_folder_container, error)
@@ -83,7 +83,7 @@ class Pipeline:
         except Exception as e:
             error = "Error deleting folder"
             self.log_error(_output_folder_container, error)
-            print e
+            print(e)
 
     def log_error(self, output_folder, message):
         log_file_path = join(output_folder, self.log_filename)

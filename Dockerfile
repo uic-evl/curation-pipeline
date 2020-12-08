@@ -1,7 +1,11 @@
 FROM ubuntu:18.04
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get -y update && apt-get install -y --no-install-recommends cmake g++ ghostscript git gnupg gnupg2 gnupg1 make python-dev python-numpy python-pip python3-pip python3.7 unzip wget xvfb
+RUN apt-get -y update && apt-get install -y --no-install-recommends cmake g++ ghostscript git gnupg gnupg2 gnupg1 locales locales-all make ttf-mscorefonts-installer python-dev python-numpy python-pip python3-pip python3.7 unzip wget xvfb
+
+ENV LC_ALL en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
 
 # Install opencv 2.4 to run on python 2.7. Numpy is required to add the python wrapper
 RUN cd /home \
@@ -45,8 +49,7 @@ RUN chmod a+x ./xvfb.sh
 CMD ./xvfb.sh
 
 ## RUN 
-RUN pip install --upgrade pip && pip install lxml Pillow scipy selenium 
-RUN pip3 install execnet
+RUN pip install --upgrade pip && pip install lxml Pillow scipy selenium && pip3 install Pillow numpy execnet
 RUN rm ./xvfb.sh \ 
     && apt-get -y remove wget gnupg gnupg2 gnupg1 unzip cmake g++ \
     && apt-get clean && apt-get autoclean & rm -rf /var/lib/apt/lists/*

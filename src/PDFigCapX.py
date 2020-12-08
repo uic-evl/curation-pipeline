@@ -82,9 +82,7 @@ class PDFigCapX():
       try:
         # process content using the ChromeDriver
         # figures, info = figures_captions_list(_input_path, _pdf, _xpdf_output_path, self.chrome_driver_path)
-        output = self.py2_wrapper(_input_path, _pdf, _xpdf_output_path, self.chrome_driver_path)
-        print(type(output))
-        print(len(output))
+        figures, info = self.py2_wrapper(_input_path, _pdf, _xpdf_output_path, self.chrome_driver_path)
         flag = 1
       except Exception as e:
         flag = 0

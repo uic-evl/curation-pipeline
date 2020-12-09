@@ -1,6 +1,12 @@
 FROM ubuntu:18.04
 ENV DEBIAN_FRONTEND=noninteractive
 
+ARG USER=docker
+ARG UID=1000
+ARG GID=1000
+ARG PW=docker
+
+RUN useradd -m ${USER} --uid=${UID} && echo "${USER}:${PW}" | chpasswd
 RUN apt-get -y update && apt-get install -y --no-install-recommends cmake g++ ghostscript gsfonts-x11 git gnupg gnupg2 gnupg1 locales locales-all make python-dev python-numpy python-pip python3-pip python3.7 unzip wget xvfb
 
 # ---------
@@ -10,7 +16,7 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends cmake g++ gh
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
-ENV DISPLAY=:99
+ENV DISPLAY :99
 ENV DPI 300
 
 # ---------
@@ -71,3 +77,25 @@ RUN cd /home && git clone https://github.com/uic-evl/curation-pipeline.git && cd
 RUN rm ./xvfb.sh \ 
     && apt-get -y remove wget gnupg gnupg2 gnupg1 unzip cmake g++ \
     && apt-get clean && apt-get autoclean & rm -rf /var/lib/apt/lists/*
+
+USER ${UID}:${GID}
+WORKDIR /home/${USER}
+
+
+# ---------
+# Build image
+# ---------
+# export UID=$(id -u)
+# export GID=$(id -g)
+# docker build --build-arg USER=$USER \
+#              --build-arg UID=$UID \
+#              --build-arg GID=$GID \
+#              --build-arg PW=<PASSWORD IN CONTAINER> \
+#              -t <IMAGE NAME> \
+#              -f <DOCKERFILE NAME>\
+#              .
+# ---------
+# Run image
+# ---------
+# docker run --user root --workdir /root -it <IMAGE NAME> /bin/bash
+# docker run -it -v /home/juan/projects/storage/pipeline:/mnt/output curation/create:1.0 /bin/bash

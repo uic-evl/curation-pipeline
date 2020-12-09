@@ -8,8 +8,9 @@ sys.path.append(source_folder)
 
 from FigSplitWrapper import FigSplitWrapper
 
-output_folder = abspath(join(current_folder, '..', '..', 'output'))
-input_folder_path = join(output_folder, '15350224')
+input_folder_path = abspath(
+    join(current_folder, '..', '..', 'input', 'test_figsplit'))
+output_folder_path = '/mnt/output'
 
 FIGSPLIT_URL = 'https://www.eecis.udel.edu/~compbio/FigSplit'
 fsw = FigSplitWrapper(FIGSPLIT_URL)

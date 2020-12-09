@@ -13,30 +13,31 @@ PDF_OUTPUT_FOLDER = 'xpdf_'
 LOG_FILE = 'PDFigCapXlog.txt'
 MAX_WRONG_COUNT = 5
 
+
 class PDFigCapX():
     """ Extract the figures and captions from PDF documents.
 
-    PDFigCapx extracts the figures and captions from all the documents in 
-    an input path an places them in a given output path. For each PDF, it 
-    creates a folder with the document name and a folder with the document 
-    name and the prefix _xpdf. The _xpdf folder contains the outputs from 
+    PDFigCapx extracts the figures and captions from all the documents in
+    an input path an places them in a given output path. For each PDF, it
+    creates a folder with the document name and a folder with the document
+    name and the prefix _xpdf. The _xpdf folder contains the outputs from
     the extraction tools.
 
-    In a Linux environment, this class depends on the installation of 
-    ghostscript and gsfonts (Type 1 and X11). Also, the system local should 
-    support UTF-8. The current implementation is heavily dependent on a 
+    In a Linux environment, this class depends on the installation of
+    ghostscript and gsfonts (Type 1 and X11). Also, the system local should
+    support UTF-8. The current implementation is heavily dependent on a
     Python 2.7 installation to execute figures_captions_list, which is here
     wrapped in execnet. For the docker installation, we are hardcoding the
-    location of the compiled files pdf_info.pyc and xpdf_process.pyc which 
+    location of the compiled files pdf_info.pyc and xpdf_process.pyc which
     are maintained by Pengyuan Li.
 
     Attributes:
         _chrome_drive_path: path to chromedriver. e.g. /usr/bin/chromedriver
         _xpdf_pdftohtml_path: path to bin64/pdftohtml in xpdf tools.
-        _imagemagick_convert_path: path to convert.exe in imagemagick. Only 
+        _imagemagick_convert_path: path to convert.exe in imagemagick. Only
           relevant for windows systems.
     """
-  def __init__(self,
+  def __init__(self,   
     _chrome_drive_path='/usr/bin/chromedriver',
     _xpdf_pdftohtml_path='/usr/local/bin/pdftohtml',
     _imagemagick_convert_path=None):
@@ -73,7 +74,7 @@ class PDFigCapX():
 
   def __convert_pdf_to_html(self, _xpdf_output_path, _pdf, _pdf_path):
     try:
-      ##xpdf_pdf_path = join(_xpdf_output_path, _pdf[:-4]) # not creating folder inside xpdf_output but as prefix
+      # xpdf_pdf_path = join(_xpdf_output_path, _pdf[:-4]) # not creating folder inside xpdf_output but as prefix
       xpdf_pdf_path = _xpdf_output_path + _pdf[:-4]   # This variable seems to be hardcoded figures_caption_list
       if not isdir(xpdf_pdf_path):
         # check the execution of the pdftohtml binary of xpdf
@@ -163,9 +164,9 @@ class PDFigCapX():
             })
             caption_output_filepath = join(output_file_path, '%d_%d.txt' % (page_no, order_no))
             with open(caption_output_filepath, 'w') as capoutput:
-              #print len(bbox[1][1])
-              #print bbox[1][1]
-              #capoutput.write(str(bbox[1][1]))
+              # print len(bbox[1][1])
+              # print bbox[1][1]
+              # capoutput.write(str(bbox[1][1]))
               content = ''.join(bbox[1][1])
               capoutput.write(content)
           else:

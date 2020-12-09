@@ -1,31 +1,21 @@
 import sys
 from os import getcwd
 from os.path import join, abspath
+from PDFigCapX import PDFigCapX
 
 current_folder = getcwd()
 source_folder = abspath(join(current_folder, '..'))
 sys.path.append(source_folder)
 
-from PDFigCapX import PDFigCapX
-
-# windows
-#dependecies_folder = abspath(join(current_folder, '..', '..', 'dependencies', 'win'))
-#chrome_driver_path = join(dependecies_folder, 'chromedriver_win32','chromedriver.exe')
-#xpdf_pdftohtml_path = join(dependecies_folder, 'xpdf', 'bin64', 'pdftohtml.exe')
-#imagemagick_convert_path = join(dependecies_folder, 'ImageMagick-7.0.8-26-portable-Q16-x86', 'convert.exe')
-
-# mac
-# dependecies_folder = abspath(join(current_folder, '..', '..', 'dependencies', 'mac'))
 chrome_driver_path = join('/usr/bin/chromedriver')
-# xpdf_pdftohtml_path = join(dependecies_folder, 'xpdf-tools-mac-4.00', 'bin64', 'pdftohtml')
-# imagemagick_convert_path = join(dependecies_folder, 'ImageMagick-7.0.8', 'bin', 'convert')
-xpdf_pdftohtml_path = "/home/juan/projects/curation-deployment/xpdf-tools-linux-4.02/bin64/pdftohtml"
-imagemagick_convert_path = "/home/juan/projects/curation-deployment/imagemagick/convert.exe"
+xpdf_pdftohtml_path = "/usr/local/bin/pdftohtml"
 
 input_path = abspath(join(current_folder, '..', '..', 'input'))
-output_path = abspath(join(current_folder, '..', '..', 'output'))
+output_path = '/mnt/output'
 
-p = PDFigCapX(chrome_driver_path, xpdf_pdftohtml_path, imagemagick_convert_path)
+p = PDFigCapX(
+    _chrome_drive_path=chrome_driver_path,
+    _xpdf_pdftohtml_path=xpdf_pdftohtml_path)
 total_files, total_pdf, total_successes = p.extract(input_path, output_path)
 
 print("Total files: %d\nTotal PDFs: %d\nTotal successes: %d" % (total_files, total_pdf, total_successes))

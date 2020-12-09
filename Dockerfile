@@ -1,14 +1,17 @@
 FROM ubuntu:18.04
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get -y update && apt-get install -y --no-install-recommends cmake g++ ghostscript git gnupg gnupg2 gnupg1 locales locales-all make python-dev python-numpy python-pip python3-pip python3.7 unzip wget xvfb
+RUN apt-get -y update && apt-get install -y --no-install-recommends cmake g++ ghostscript gsfonts-x11 git gnupg gnupg2 gnupg1 locales locales-all make python-dev python-numpy python-pip python3-pip python3.7 unzip wget xvfb
 
 # ---------
-# Update Docker default local to satisfy xpdf's utf requirements
+# Environmental variables.
+# UTF-8 Locales for xpdf, display for headless chrome, and DPI for image extraction 
 # ---------
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
+ENV DISPLAY=:99
+ENV DPI 300
 
 # ---------
 # Install opencv 2.4 to run on python 2.7. Numpy is required to add the python wrapper
@@ -37,22 +40,20 @@ RUN wget -q -O - --no-check-certificate https://dl-ssl.google.com/linux/linux_si
     && chmod +x /usr/bin/chromedriver \
     && rm chromedriver_linux64.zip
 
-# xpdf tools and imagemagick
-RUN mkdir -p /home/pdfigcapx_dependencies \
-    && cd /home/pdfigcapx_dependencies \
+# ---------
+# xpdf tools. Note: apt install xpdf does not work (maybe it's bin32?), stick
+# to the provided TAR.
+# ---------
+RUN cd /home \
     && wget --no-check-certificate https://dl.xpdfreader.com/xpdf-tools-linux-4.02.tar.gz \
-    && mkdir -p imagemagick-7.0.10-46 \
-    && cd imagemagick-7.0.10-46 \
-    && wget --no-check-certificate https://imagemagick.org/download/binaries/ImageMagick-7.0.10-46-portable-Q16-x86.zip \
-    && unzip /home/pdfigcapx_dependencies/imagemagick-7.0.10-46/ImageMagick-7.0.10-46-portable-Q16-x86.zip \
-    && rm /home/pdfigcapx_dependencies/imagemagick-7.0.10-46/ImageMagick-7.0.10-46-portable-Q16-x86.zip \
-    && cd .. && tar -zxvf /home/pdfigcapx_dependencies/xpdf-tools-linux-4.02.tar.gz \
-    && rm /home/pdfigcapx_dependencies/xpdf-tools-linux-4.02.tar.gz
+    && tar -zxvf /home/xpdf-tools-linux-4.02.tar.gz \
+    && rm /home/xpdf-tools-linux-4.02.tar.gz \
+    && cp /home/xpdf-tools-linux-4.02/bin64/pdftohtml /usr/local/bin \
+    && rm -r /home/xpdf-tools-linux-4.02
 
 # ---------
 # Display configuration for headless Chrome
 # ---------
-ENV DISPLAY=:99
 ADD xvfb.sh ./xvfb.sh
 RUN chmod a+x ./xvfb.sh
 CMD ./xvfb.sh
@@ -61,8 +62,7 @@ CMD ./xvfb.sh
 # Python dependencies for the runner (py3) and the legacy py2 code.
 # ---------
 RUN pip install --upgrade pip && pip install lxml Pillow scipy selenium && pip3 install Pillow numpy execnet
-RUN apt-get install -y gsfonts-x11
-#RUN apt-get install -y xpdf
+RUN cd /home && git clone https://github.com/uic-evl/curation-pipeline.git && cd curation-pipeline && git checkout python3
 
 
 # ---------

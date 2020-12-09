@@ -5,7 +5,6 @@ import time
 import renderer
 import os
 
-# from xpdf_process import figures_captions_list
 from os import mkdir, listdir
 from os.path import join, isdir
 from pprint import pprint
@@ -15,11 +14,38 @@ LOG_FILE = 'PDFigCapXlog.txt'
 MAX_WRONG_COUNT = 5
 
 class PDFigCapX():
-  def __init__(self, _chrome_drive_path, _xpdf_pdftohtml_path, _imagemagick_convert_path):
+    """ Extract the figures and captions from PDF documents.
+
+    PDFigCapx extracts the figures and captions from all the documents in 
+    an input path an places them in a given output path. For each PDF, it 
+    creates a folder with the document name and a folder with the document 
+    name and the prefix _xpdf. The _xpdf folder contains the outputs from 
+    the extraction tools.
+
+    In a Linux environment, this class depends on the installation of 
+    ghostscript and gsfonts (Type 1 and X11). Also, the system local should 
+    support UTF-8. The current implementation is heavily dependent on a 
+    Python 2.7 installation to execute figures_captions_list, which is here
+    wrapped in execnet. For the docker installation, we are hardcoding the
+    location of the compiled files pdf_info.pyc and xpdf_process.pyc which 
+    are maintained by Pengyuan Li.
+
+    Attributes:
+        _chrome_drive_path: path to chromedriver. e.g. /usr/bin/chromedriver
+        _xpdf_pdftohtml_path: path to bin64/pdftohtml in xpdf tools.
+        _imagemagick_convert_path: path to convert.exe in imagemagick. Only 
+          relevant for windows systems.
+    """
+  def __init__(self,
+    _chrome_drive_path='/usr/bin/chromedriver',
+    _xpdf_pdftohtml_path='/usr/local/bin/pdftohtml',
+    _imagemagick_convert_path=None):
+    
     self.chrome_driver_path = _chrome_drive_path
     self.xpdf_pdftohtml_path = _xpdf_pdftohtml_path
     self.imagemagick_convert_path = _imagemagick_convert_path
     self.log_file = None
+    self.dpi = os.getenv('DPI') or 300
 
 
   def extract(self, _input_path, _output_path):
@@ -36,7 +62,7 @@ class PDFigCapX():
       if (pdf.endswith('.pdf') or pdf.endswith('.PDF')) and not pdf.startswith('._'):
         total_pdf += 1
         pdf_path = join(_input_path, pdf)
-        images = renderer.render_pdf(pdf_path, self.imagemagick_convert_path)
+        images = renderer.render_pdf(pdf_path, self.imagemagick_convert_path, dpi=self.dpi)
 
         if self.__convert_pdf_to_html(xpdf_output_path_prefix, pdf, pdf_path):
           if self.__process_figures(images, _input_path, pdf, xpdf_output_path_prefix, _output_path):
@@ -60,7 +86,6 @@ class PDFigCapX():
 
 
   def py2_wrapper(self, input_path, pdf, xpdf_output_path, chromedriver):
-    print("calling wrapper")
     gw = execnet.makegateway("popen//python=python") # invoke python 2.7 (in Docker as python)
     channel = gw.remote_exec("""
       import sys

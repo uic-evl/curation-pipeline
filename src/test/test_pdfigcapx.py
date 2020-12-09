@@ -1,11 +1,12 @@
 import sys
 from os import getcwd
 from os.path import join, abspath
-from PDFigCapX import PDFigCapX
 
 current_folder = getcwd()
 source_folder = abspath(join(current_folder, '..'))
 sys.path.append(source_folder)
+
+from PDFigCapX import PDFigCapX
 
 chrome_driver_path = join('/usr/bin/chromedriver')
 xpdf_pdftohtml_path = "/usr/local/bin/pdftohtml"

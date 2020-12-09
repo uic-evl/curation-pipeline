@@ -3,6 +3,7 @@ import json
 import subprocess
 import time
 import renderer
+import os
 
 # from xpdf_process import figures_captions_list
 from os import mkdir, listdir
@@ -60,10 +61,10 @@ class PDFigCapX():
 
   def py2_wrapper(self, input_path, pdf, xpdf_output_path, chromedriver):
     print("calling wrapper")
-    gw = execnet.makegateway("popen//python=python2") # env specific
+    gw = execnet.makegateway("popen//python=python") # invoke python 2.7 (in Docker as python)
     channel = gw.remote_exec("""
       import sys
-      sys.path.append('/home/juan/projects/Curation-Pipeline/compiled')
+      sys.path.append('/home/curation-pipeline/compiled')
       from xpdf_process import figures_captions_list
       channel.send(figures_captions_list(*channel.receive()))
     """)

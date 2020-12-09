@@ -1,13 +1,18 @@
 FROM ubuntu:18.04
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get -y update && apt-get install -y --no-install-recommends cmake g++ ghostscript git gnupg gnupg2 gnupg1 locales locales-all make ttf-mscorefonts-installer python-dev python-numpy python-pip python3-pip python3.7 unzip wget xvfb
+RUN apt-get -y update && apt-get install -y --no-install-recommends cmake g++ ghostscript git gnupg gnupg2 gnupg1 locales locales-all make python-dev python-numpy python-pip python3-pip python3.7 unzip wget xvfb
 
+# ---------
+# Update Docker default local to satisfy xpdf's utf requirements
+# ---------
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 
+# ---------
 # Install opencv 2.4 to run on python 2.7. Numpy is required to add the python wrapper
+# ---------
 RUN cd /home \
     && git clone --recursive https://github.com/skvark/opencv-python.git \
     && cd /home/opencv-python/opencv \
@@ -19,7 +24,9 @@ RUN cd /home \
     && make install \
     && rm -r /home/opencv-python
 
+# ---------
 # chromedriver
+# ---------
 RUN wget -q -O - --no-check-certificate https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add \
     && echo "deb [arch=amd64]  http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
     && apt-get -y update && apt-get -y --no-install-recommends install google-chrome-stable \
@@ -34,22 +41,33 @@ RUN wget -q -O - --no-check-certificate https://dl-ssl.google.com/linux/linux_si
 RUN mkdir -p /home/pdfigcapx_dependencies \
     && cd /home/pdfigcapx_dependencies \
     && wget --no-check-certificate https://dl.xpdfreader.com/xpdf-tools-linux-4.02.tar.gz \
-    && mkdir -p imagemagick-7.0.10-45 \
-    && cd imagemagick-7.0.10-45 \
-    && wget --no-check-certificate https://imagemagick.org/download/binaries/ImageMagick-7.0.10-45-portable-Q16-x86.zip \
-    && unzip /home/pdfigcapx_dependencies/imagemagick-7.0.10-45/ImageMagick-7.0.10-45-portable-Q16-x86.zip \
-    && rm /home/pdfigcapx_dependencies/imagemagick-7.0.10-45/ImageMagick-7.0.10-45-portable-Q16-x86.zip \
-    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p imagemagick-7.0.10-46 \
+    && cd imagemagick-7.0.10-46 \
+    && wget --no-check-certificate https://imagemagick.org/download/binaries/ImageMagick-7.0.10-46-portable-Q16-x86.zip \
+    && unzip /home/pdfigcapx_dependencies/imagemagick-7.0.10-46/ImageMagick-7.0.10-46-portable-Q16-x86.zip \
+    && rm /home/pdfigcapx_dependencies/imagemagick-7.0.10-46/ImageMagick-7.0.10-46-portable-Q16-x86.zip \
     && cd .. && tar -zxvf /home/pdfigcapx_dependencies/xpdf-tools-linux-4.02.tar.gz \
     && rm /home/pdfigcapx_dependencies/xpdf-tools-linux-4.02.tar.gz
 
+# ---------
+# Display configuration for headless Chrome
+# ---------
 ENV DISPLAY=:99
 ADD xvfb.sh ./xvfb.sh
 RUN chmod a+x ./xvfb.sh
 CMD ./xvfb.sh
 
-## RUN 
+# ---------
+# Python dependencies for the runner (py3) and the legacy py2 code.
+# ---------
 RUN pip install --upgrade pip && pip install lxml Pillow scipy selenium && pip3 install Pillow numpy execnet
+RUN apt-get install -y gsfonts-x11
+#RUN apt-get install -y xpdf
+
+
+# ---------
+# Clean-up packages only needed for installation
+# ---------
 RUN rm ./xvfb.sh \ 
     && apt-get -y remove wget gnupg gnupg2 gnupg1 unzip cmake g++ \
     && apt-get clean && apt-get autoclean & rm -rf /var/lib/apt/lists/*

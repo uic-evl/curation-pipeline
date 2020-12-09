@@ -37,11 +37,7 @@ class PDFigCapX():
         _imagemagick_convert_path: path to convert.exe in imagemagick. Only
           relevant for windows systems.
     """
-  def __init__(self,
-    _chrome_drive_path='/usr/bin/chromedriver',
-    _xpdf_pdftohtml_path='/usr/local/bin/pdftohtml',
-    _imagemagick_convert_path=None):
-    
+  def __init__(self,_chrome_drive_path='/usr/bin/chromedriver',_xpdf_pdftohtml_path='/usr/local/bin/pdftohtml',_imagemagick_convert_path=None):
     self.chrome_driver_path = _chrome_drive_path
     self.xpdf_pdftohtml_path = _xpdf_pdftohtml_path
     self.imagemagick_convert_path = _imagemagick_convert_path

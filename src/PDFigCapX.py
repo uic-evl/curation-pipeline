@@ -1,9 +1,9 @@
-import execnet
 import json
 import subprocess
 import time
 import renderer
 import os
+import execnet
 
 from os import mkdir, listdir
 from os.path import join, isdir
@@ -37,7 +37,7 @@ class PDFigCapX():
         _imagemagick_convert_path: path to convert.exe in imagemagick. Only
           relevant for windows systems.
     """
-  def __init__(self,   
+  def __init__(self,
     _chrome_drive_path='/usr/bin/chromedriver',
     _xpdf_pdftohtml_path='/usr/local/bin/pdftohtml',
     _imagemagick_convert_path=None):

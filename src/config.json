@@ -1,7 +1,7 @@
 {
   "chromedriver_path": "/usr/bin/chromedriver",
-  "xpdf_pdftohtml_path": "/home/juan/projects/curation-deployment/xpdf-tools-linux-4.02/bin64/pdftohtml",
-  "imagemagick_convert_path": "/home/juan/projects/curation-deployment/imagemagick/convert.exe",
+  "xpdf_pdftohtml_path": "/usr/local/bin/pdftohtml",
+  "imagemagick_convert_path": "",
   "figsplit_url": "https://www.eecis.udel.edu/~compbio/FigSplit",
   "insert_document_service_uri": "http://localhost:3020/api/insertFromPipe",
   "send_task_service_uri": "http://localhost:3020/api/sendPipeTask",

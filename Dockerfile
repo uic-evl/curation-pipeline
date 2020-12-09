@@ -6,8 +6,8 @@ ARG UID=1000
 ARG GID=1000
 ARG PW=docker
 
-RUN useradd -m ${USER} --uid=${UID} && echo "${USER}:${PW}" | chpasswd
-RUN apt-get -y update && apt-get install -y --no-install-recommends cmake g++ ghostscript gsfonts-x11 git gnupg gnupg2 gnupg1 locales locales-all make python-dev python-numpy python-pip python3-pip python3.7 unzip wget xvfb
+RUN apt-get -y update && apt-get install -y --no-install-recommends cmake g++ ghostscript gsfonts-x11 git gnupg gnupg2 gnupg1 locales locales-all make python-dev python-numpy python-pip python3-pip python3.7 sudo unzip wget xvfb
+RUN useradd -m ${USER} --uid=${UID} && echo "${USER}:${PW}" | chpasswd && adduser ${USER} sudo
 
 # ---------
 # Environmental variables.
@@ -67,7 +67,10 @@ CMD ./xvfb.sh
 # ---------
 # Python dependencies for the runner (py3) and the legacy py2 code.
 # ---------
-RUN pip install --upgrade pip && pip install lxml Pillow scipy selenium && pip3 install Pillow numpy execnet
+RUN pip install --upgrade pip && pip install lxml Pillow scipy selenium && pip3 install Pillow numpy execnet requests
+
+# force busting the cache to clone again repo
+ARG CACHEBUST=1
 RUN cd /home && git clone https://github.com/uic-evl/curation-pipeline.git && cd curation-pipeline && git checkout python3
 
 
@@ -94,8 +97,9 @@ WORKDIR /home/${USER}
 #              -t <IMAGE NAME> \
 #              -f <DOCKERFILE NAME>\
 #              .
+# e.g. docker build --build-arg USER=$USER --build-arg UID=$UID --build-arg GID=$GID --build-arg PW=juan --build-arg CACHEBUST=$(date +%s) -t curation/pipeline:1.0 .
 # ---------
 # Run image
 # ---------
 # docker run --user root --workdir /root -it <IMAGE NAME> /bin/bash
-# docker run -it -v /home/juan/projects/storage/pipeline:/mnt/output curation/create:1.0 /bin/bash
+# e.g. docker run -it -v /home/juan/projects/storage/pipeline:/mnt/output curation/create:1.0 /bin/bash

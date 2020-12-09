@@ -1,4 +1,4 @@
-from requests import post
+from urllib.request import post
 from os import listdir, remove
 from os.path import join
 from urllib.request import urlretrieve
@@ -28,7 +28,8 @@ class FigSplitWrapper:
                         'file': open(join(_folder_path, figure), 'rb')
                     })
                     if r.status_code == 200:
-                        self.__download_splitted_content(_folder_path, r, figure)
+                        self.__download_splitted_content(
+                            _folder_path, r, figure)
                         successful_splits += 1
                     else:
                         print(r.status_code)

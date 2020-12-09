@@ -10,7 +10,8 @@ from PDFigCapX import PDFigCapX
 chrome_driver_path = join('/usr/bin/chromedriver')
 xpdf_pdftohtml_path = "/usr/local/bin/pdftohtml"
 
-input_path = abspath(join(current_folder, '..', '..', 'input'))
+input_path = abspath(
+    join(current_folder, '..', '..', 'input', 'test_pdfigcapx'))
 output_path = '/mnt/output'
 
 p = PDFigCapX(_chrome_drive_path=chrome_driver_path,

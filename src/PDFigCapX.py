@@ -4,14 +4,18 @@ import time
 import renderer
 import os
 import execnet
+import pandas as pd
+
 
 from os import mkdir, listdir
 from os.path import join, isdir
 
 PDF_OUTPUT_FOLDER = 'xpdf_'
-LOG_FILE = 'PDFigCapXlog.txt'
+LOG_FILE = 'PDFigCapXlog.log'
+CONSOLE_OUTPUT = 'extract.log'
 MAX_WRONG_COUNT = 5
-
+ERROR_FILE = "extract_error.log"
+TRACKER_FILE = "extract_track.csv"
 
 class PDFigCapX():
     """ Extract the figures and captions from PDF documents.
@@ -43,27 +47,75 @@ class PDFigCapX():
         self.log_file = None
         self.dpi = os.getenv('DPI') or 300
 
-    def extract(self, _input_path, _output_path):
-        xpdf_output_path_prefix = join(
-            _output_path, PDF_OUTPUT_FOLDER)  # xpdf_path
-        log_file_path = join(_output_path, LOG_FILE)
-        self.log_file = open(log_file_path, 'w')
+    def extract(self, _input_path, _output_path, _log_path, _filterProccessed):
+        xpdf_output_path_prefix = join(_output_path, PDF_OUTPUT_FOLDER)  # xpdf_path
+        log_file_path = join(_log_path, LOG_FILE)
+        
+        self.log_file = open(log_file_path, 'a')
+        
+        self.error_file = join(_log_path, ERROR_FILE)
+        self.track_file = join(_log_path, TRACKER_FILE)
+        self.console_output = join(_log_path, CONSOLE_OUTPUT)
+        self.directory = _input_path.split('/')[-1]
+        self.total_time = 0
 
         # process each pdf file in the input folder
         files = listdir(_input_path)
         success = 0
         total_pdf = 0
+        errorMessage = ''
+
+        if (_filterProccessed):
+            files = self.filterProcessed(files)
 
         for pdf in files:
             if (pdf.endswith('.pdf') or pdf.endswith('.PDF')) and not pdf.startswith('._'):
-                total_pdf += 1
-                pdf_path = join(_input_path, pdf)
-                images = renderer.render_pdf(
-                    pdf_path, self.imagemagick_convert_path, dpi=self.dpi)
 
-                if self.__convert_pdf_to_html(xpdf_output_path_prefix, pdf, pdf_path):
-                    if self.__process_figures(images, _input_path, pdf, xpdf_output_path_prefix, _output_path):
-                        success += 1
+                name = pdf[:-4]
+                directory = xpdf_output_path_prefix + name
+                if not os.path.isdir(directory):
+
+                    total_pdf += 1
+                    pdf_path = join(_input_path, pdf)
+
+                    start = time.perf_counter()
+
+                    try:
+                        images = renderer.render_pdf(
+                            pdf_path, self.imagemagick_convert_path, dpi=self.dpi)
+                    except Exception as e:
+                        errorMessage += " [{}]: {}".format(name, "Image Error")
+                        self.__logError("{}|{}".format(self.directory, name), e)
+                        continue
+
+                    if self.__convert_pdf_to_html(xpdf_output_path_prefix, pdf, pdf_path):
+                        if self.__process_figures(images, _input_path, pdf, xpdf_output_path_prefix, _output_path):
+                            success += 1
+                        else:
+                            errorMessage += " [{}]: {}".format(name, "Zero Images or Error extraction of figures")
+                            self.__logError("{}|{}".format(self.directory, name), "error extraction of figures")
+                    else:
+                        errorMessage += " [{}]: {}".format(name, "error Convert to HTML")
+                        self.__logError("{}|{}".format(self.directory, name), "error Convert to HTML")
+                    
+                    end = time.perf_counter()
+        
+        if(success == total_pdf):
+            status = "S"
+            errorMessage = "Ok"
+        else:
+            if(success >= 1):
+                status = "S"
+                errorMessage = "Not all pdfs transformed, {}/{} success.".format(success, total_pdf) + errorMessage
+            else:
+                status = "E"
+        # status = "S"
+        # if(len(errorMessage)==0):
+        #     errorMessage = 'Ok'
+        # else:
+        #     status = "E"
+        self.__track(self.directory, status , errorMessage)  
+
         self.log_file.close()
         return len(files), total_pdf, success
 
@@ -71,14 +123,17 @@ class PDFigCapX():
         try:
             # This variable seems to be hardcoded figures_caption_list
             xpdf_pdf_path = _xpdf_output_path + _pdf[:-4]
+
             if not isdir(xpdf_pdf_path):
                 # check the execution of the pdftohtml binary of xpdf
                 std_out = subprocess.check_output(
                     [self.xpdf_pdftohtml_path, _pdf_path, xpdf_pdf_path])
+
             return True
         except Exception as e:
             print("\nWrong %s\n" % _pdf)
             self.log_file.write("%s\n%s\n" % (_pdf, e))
+            self.__logError(_pdf, e)
             return False
 
     def py2_wrapper(self, input_path, pdf, xpdf_output_path, chromedriver):
@@ -91,7 +146,13 @@ class PDFigCapX():
       channel.send(figures_captions_list(*channel.receive()))
     """)
         channel.send([input_path, pdf, xpdf_output_path, chromedriver])
-        return channel.receive()
+
+        data = channel.receive()
+        channel.waitclose()
+        group = execnet.default_group
+        group.terminate(timeout=1.0)
+
+        return data
 
     def __extract_figures(self, _input_path, _pdf, _xpdf_output_path):
         # i don't get the logic behind wrong_count and flag.
@@ -114,6 +175,7 @@ class PDFigCapX():
                 # info['fig_no_est'] = 0
                 print("error _extract_figures")
                 self.log_file.write("%s\n%s" % (_pdf, e))
+                self.__logError(_pdf, e)
 
             return figures, info, flag
 
@@ -185,4 +247,36 @@ class PDFigCapX():
         json_file = join(output_file_path, '%s.json' % _pdf[:-4])
         with open(json_file, 'w') as outfile:
             json.dump(data[_pdf], outfile, ensure_ascii=False)
+        
+        if len(figures)==0: # Zero images generated
+            return False
+
         return True
+
+
+    def __logTrack(self, _name, _output_path):
+        time_string = time.strftime("%m/%d/%Y@%H:%M:%S", time.localtime())
+        #message = "Successful" if _status == 'S' else "Error"
+        #print(_name + message)
+        record = _name + ", "+time_string #+ ", "+_status
+        #tracker_path = join(_output_path, TRACK_FILE )
+        os.system("echo '"+record+"' >> " + self.track_file)
+
+    def __track(self, _id, _status, _message):
+        record = _id + "|" + _status + "|" + _message
+        print(record)
+        os.system("echo '"+record+"' >> " + self.track_file)
+
+    def __logError(self, _id, _error):
+        record = _id + "|" + str(_error)
+        print(record)
+        os.system("echo '"+record+"' >> " + self.error_file)
+    
+    #Filter those already processed(tracker.csv) 
+    # from the current list of files.
+    def filterProcessed(self, _pdfList):
+        df = pd.read_csv(self.track_file, delimiter='|', header=None)
+        processed = df[df.iloc[:,1] == 'Sucess']      
+        processed = processed.iloc[:,0].values.tolist()
+        proc_pdf_list = [str(i)+".pdf" for i in processed]
+        return list(set(_pdfList) - set(proc_pdf_list))

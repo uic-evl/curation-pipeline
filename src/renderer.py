@@ -1,7 +1,7 @@
 import shutil
 import os, sys, re
 from PIL import Image
-import numpy as np
+#import numpy as np
 import tempfile
 
 def render_pdf(filename, imagemagick_convert_path, dpi=150):
@@ -18,6 +18,8 @@ def render_pdf(filename, imagemagick_convert_path, dpi=150):
     # outputDir = currDir + sep + fname + sep
     # os.mkdir(outputDir, 0755)
     outputDir = tempfile.mkdtemp()
+    #outputDir = /var/folders/dd/ynmyx0vn2j1br5f4pt1g_v9r0000gp/T/tmpcbgrbwzk
+
     '''
     outputDir = tempfile.mkdtemp()  # added by Huhu
     '''
@@ -53,7 +55,7 @@ def render_pdf(filename, imagemagick_convert_path, dpi=150):
 
 def natural_sort(l): # this is taken from stack overflow.
     """
-        This function will sort strings with numeric values in natural ascending order, 
+        This function will sort strings with numeric values in natural ascending order,
         such that it does not go 1,11,2 etc.
     """
     convert = lambda text: int(text) if text.isdigit() else text.lower()

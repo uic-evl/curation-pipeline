@@ -1,4 +1,4 @@
-# Curation-Pipeline
+# Curation-Pipeline - CORD
 
 Where we receive one or more PDFs, extract the figures and captions (`PDFigCapX`), split the figures into subfigures (`FigSplit`) and store the information in the curation database. While database stores the metadata, we store the PDF, figures, subfigures and extraction logs are stored in an user-determined output folder. For the curation front-end purposes, this locations should be the folder serving the static files.
 

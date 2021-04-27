@@ -76,7 +76,7 @@ class DownloadPaper():
                 self.__track(str(_id), 'E', 'No PDF in the compressed file')
         except Exception as e:
             self.__track(str(_id), 'E', 'Exception {0}'.format(str(e)))
-            self.__logError('Exception {0}'.format(str(e)))
+            self.__logError(str(_id),'Exception {0}'.format(str(e)))
 
     def download_batch_ids(self, ids , output_dir):
         for id in ids:

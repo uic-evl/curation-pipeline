@@ -19,6 +19,7 @@ class Pipeline:
         self.organization = _config['organization']
         self.group_name = _config['groupname']
         self.log_filename = _config['logfilename']
+        self.token = _config['token']
 
     def process_file(self, _doc_path, _output_folder_container):
         if not exists(_doc_path):
@@ -59,7 +60,7 @@ class Pipeline:
             self.remove_folder(document_folder_path, _output_folder_container)
             return None
 
-        task_service = Task(self.insert_document_service_uri, self.send_task_service_uri)
+        task_service = Task(self.insert_document_service_uri, self.send_task_service_uri, self.token)
         document = task_service.create_document(document_folder_path)
         saved_document, saving_error = task_service.insert_document(document)
         if saved_document:

@@ -34,14 +34,16 @@ class PDFigCapX():
           relevant for windows systems.
     """
 
-    def __init__(self, _chrome_drive_path='/usr/bin/chromedriver',
-                 _xpdf_pdftohtml_path='/usr/local/bin/pdftohtml',
-                 _imagemagick_convert_path=None):
+    def __init__(self,
+                _dpi=300,
+                _chrome_drive_path='/usr/bin/chromedriver',
+                _xpdf_pdftohtml_path='/usr/local/bin/pdftohtml',
+                _imagemagick_convert_path=None):
         self.chrome_driver_path = _chrome_drive_path
         self.xpdf_pdftohtml_path = _xpdf_pdftohtml_path
-        self.imagemagick_convert_path = _imagemagick_convert_path
+        self.imagemagick_convert_path = _imagemagick_convert_path        
+        self.dpi = _dpi
         self.log_file = None
-        self.dpi = os.getenv('DPI') or 300
 
     def extract(self, _input_path, _output_path):
         xpdf_output_path_prefix = join(
@@ -83,15 +85,21 @@ class PDFigCapX():
 
     def py2_wrapper(self, input_path, pdf, xpdf_output_path, chromedriver):
         # invoke python 2.7 (in Docker as python)
-        gw = execnet.makegateway("popen//python=python")
-        channel = gw.remote_exec("""
-      import sys
-      sys.path.append('/home/curation-pipeline/compiled')
-      from xpdf_process import figures_captions_list
-      channel.send(figures_captions_list(*channel.receive()))
-    """)
-        channel.send([input_path, pdf, xpdf_output_path, chromedriver])
-        return channel.receive()
+        try:
+            group = execnet.Group()
+            gw = group.makegateway("popen//python=python")
+            channel = gw.remote_exec("""
+                import sys
+                sys.path.append('/home/curation-pipeline/compiled')
+                from xpdf_process import figures_captions_list
+                channel.send(figures_captions_list(*channel.receive()))
+                """)
+            channel.send([input_path, pdf, xpdf_output_path, chromedriver])
+            result = channel.receive()            
+            return result        
+        finally:
+            group.terminate(timeout=1.0)
+
 
     def __extract_figures(self, _input_path, _pdf, _xpdf_output_path):
         # i don't get the logic behind wrong_count and flag.

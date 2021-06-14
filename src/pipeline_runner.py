@@ -94,6 +94,9 @@ def validate(config):
     if "send_task_service_uri" not in config:
         print("Could not find the url for the SendTask service.\n")
         return False
+    if "token" not in config:
+        print("Could not find authentication token.\n")
+        return False
     return True
 
 

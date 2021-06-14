@@ -2,13 +2,14 @@ import json
 from ntpath import basename
 from os.path import join, exists
 from os import listdir
-from urllib.requests import patch
+import requests
 
 
 class Task:
-    def __init__(self, _insert_document_uri, _send_task_uri):
+    def __init__(self, _insert_document_uri, _send_task_uri, token):
         self.insert_document_uri = _insert_document_uri
         self.send_task_uri = _send_task_uri
+        self.token = token
 
     def create_document(self, _folder_path, _entity_id=None):
         pubmed_id = basename(_folder_path)[1:]
@@ -55,26 +56,34 @@ class Task:
 
     def insert_document(self, document):
         data = json.dumps({"document": document})
-        # 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
-        headers = {'Content-Type': 'application/json'}
 
-        response = patch(self.insert_document_uri, data=data, headers=headers)
+        # 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
+        headers = {'Content-Type': 'application/json',
+                   'Authorization': "Bearer {0}".format(self.token)}        
+
+        response = requests.post(self.insert_document_uri, data=data, headers=headers)
 
         if response.status_code == 200:
             return response.json(), None
+        if response.status_code == 401:
+            print(response.content)
         return None, str(data) + '\n\n' + str(response)
 
-    def send_task(self, doc_id, doc_name, organization, group_name):
+    def send_task(self, doc_id, doc_name, organization, group_name, taxonomy):
         data = json.dumps({
             "documentId": doc_id,
             "documentName": doc_name,
             "organization": organization,
-            "groupname": group_name
+            "groupname": group_name,
+            "taxonomy": taxonomy
         })
 
-        headers = {'Content-Type': 'application/json'}
-        response = patch(self.send_task_uri, data=data, headers=headers)
+        headers = {'Content-Type': 'application/json',
+            'Authorization': "Bearer {0}".format(self.token)}
+        response = requests.post(self.send_task_uri, data=data, headers=headers)
 
         if response.status_code == 200:
             return response.json()
+        if response.status_code == 401:
+            print(response.content)
         return None

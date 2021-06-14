@@ -51,11 +51,11 @@ RUN wget -q -O - --no-check-certificate https://dl-ssl.google.com/linux/linux_si
 # to the provided TAR.
 # ---------
 RUN cd /home \
-    && wget --no-check-certificate https://dl.xpdfreader.com/xpdf-tools-linux-4.02.tar.gz \
-    && tar -zxvf /home/xpdf-tools-linux-4.02.tar.gz \
-    && rm /home/xpdf-tools-linux-4.02.tar.gz \
-    && cp /home/xpdf-tools-linux-4.02/bin64/pdftohtml /usr/local/bin \
-    && rm -r /home/xpdf-tools-linux-4.02
+    && wget --no-check-certificate https://dl.xpdfreader.com/xpdf-tools-linux-4.03.tar.gz \
+    && tar -zxvf /home/xpdf-tools-linux-4.03.tar.gz \
+    && rm /home/xpdf-tools-linux-4.03.tar.gz \
+    && cp /home/xpdf-tools-linux-4.03/bin64/pdftohtml /usr/local/bin \
+    && rm -r /home/xpdf-tools-linux-4.03
 
 # ---------
 # Display configuration for headless Chrome

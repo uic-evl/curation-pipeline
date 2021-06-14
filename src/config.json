@@ -8,5 +8,6 @@
   "organization": "uic",
   "groupname": "uic",
   "logfilename": "PipelineLog.txt",
-  "type": "extract"
+  "type": "extract",
+  "token": "INSERT HERE BEARER TOKEN"
 }

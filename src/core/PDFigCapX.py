@@ -1,7 +1,7 @@
 import json
 import subprocess
 import time
-import renderer
+from . import renderer
 import os
 import execnet
 
@@ -46,41 +46,40 @@ class PDFigCapX():
         self.log_file = None
 
     def extract(self, _input_path, _output_path):
-        xpdf_output_path_prefix = join(
-            _output_path, PDF_OUTPUT_FOLDER)  # xpdf_path
+        xpdf_output_path_prefix = join(_output_path, PDF_OUTPUT_FOLDER)  # /.../xpdf_
         log_file_path = join(_output_path, LOG_FILE)
-        self.log_file = open(log_file_path, 'w')
+        total_extracted = 0
+        total_pdfs = 0
+        pdf_err_list = []
 
-        # process each pdf file in the input folder
-        files = listdir(_input_path)
-        success = 0
-        total_pdf = 0
+        try :            
+            self.log_file = open(log_file_path, 'w')
+            pdfs = [x for x in listdir(_input_path) if x[0] != '_' and '.pdf' in x.lower() and os.path.isfile(join(_input_path, x))]
 
-        for pdf in files:
-            if (pdf.endswith('.pdf') or pdf.endswith('.PDF')) and not pdf.startswith('._'):
-                total_pdf += 1
+            for pdf in pdfs:
+                total_pdfs += 1
                 pdf_path = join(_input_path, pdf)
-                images = renderer.render_pdf(
-                    pdf_path, self.imagemagick_convert_path, dpi=self.dpi)
+
+                pil_images = renderer.render_pdf(pdf_path, self.imagemagick_convert_path, dpi=self.dpi)                    
 
                 if self.__convert_pdf_to_html(xpdf_output_path_prefix, pdf, pdf_path):
-                    if self.__process_figures(images, _input_path, pdf, xpdf_output_path_prefix, _output_path):
-                        success += 1
-        self.log_file.close()
-        return len(files), total_pdf, success
+                    if self.__process_figures(pil_images, _input_path, pdf, xpdf_output_path_prefix, _output_path):
+                        total_extracted += 1
+                    else:
+                        pdf_err_list.append(pdf)
+            return pdf_err_list, total_pdfs, total_extracted
+        finally:
+            self.log_file.close()        
 
     def __convert_pdf_to_html(self, _xpdf_output_path, _pdf, _pdf_path):
-        try:
-            # This variable seems to be hardcoded figures_caption_list
-            xpdf_pdf_path = _xpdf_output_path + _pdf[:-4]
+        try:            
+            xpdf_pdf_path = _xpdf_output_path + _pdf[:-4]  # xpdf_{pdf_name_without_extension}
             if not isdir(xpdf_pdf_path):
-                # check the execution of the pdftohtml binary of xpdf
-                std_out = subprocess.check_output(
-                    [self.xpdf_pdftohtml_path, _pdf_path, xpdf_pdf_path])
+                # execute xpdf if folder does not exist
+                std_out = subprocess.check_output([self.xpdf_pdftohtml_path, _pdf_path, xpdf_pdf_path])
             return True
         except Exception as e:
-            print("\nWrong %s\n" % _pdf)
-            self.log_file.write("%s\n%s\n" % (_pdf, e))
+            self.log_file.write("ERROR: %s\t%s\n%s\n" % (_pdf, "xpdf_to_html", e))
             return False
 
     def py2_wrapper(self, input_path, pdf, xpdf_output_path, chromedriver):
@@ -102,7 +101,6 @@ class PDFigCapX():
 
 
     def __extract_figures(self, _input_path, _pdf, _xpdf_output_path):
-        # i don't get the logic behind wrong_count and flag.
         flag = 0
         wrong_count = 0
         figures = []
@@ -111,17 +109,14 @@ class PDFigCapX():
         while flag == 0 and wrong_count < MAX_WRONG_COUNT:
             try:
                 # process content using the ChromeDriver
-                # figures, info = figures_captions_list(_input_path, _pdf, _xpdf_output_path, self.chrome_driver_path)
-                figures, info = self.py2_wrapper(
-                    _input_path, _pdf, _xpdf_output_path, self.chrome_driver_path)
+                figures, info = self.py2_wrapper(_input_path, _pdf, _xpdf_output_path, self.chrome_driver_path)
                 flag = 1
             except Exception as e:
                 flag = 0
                 wrong_count += 1
                 time.sleep(5)
-                # info['fig_no_est'] = 0
                 print("error _extract_figures")
-                self.log_file.write("%s\n%s" % (_pdf, e))
+                self.log_file.write("ERROR: %s\t%s\n%s" % (_pdf, "_extract_figures (%d/%d)".format(wrong_count, MAX_WRONG_COUNT), e))
 
             return figures, info, flag
 

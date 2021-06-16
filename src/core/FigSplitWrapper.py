@@ -1,4 +1,5 @@
-from urllib.request import post
+# from urllib.request import post
+import requests
 from os import listdir, remove
 from os.path import join
 from urllib.request import urlretrieve
@@ -24,7 +25,7 @@ class FigSplitWrapper:
             if figure.endswith((".jpg", ".png", ".jpeg", "bmp", "tif", ".tif")):
                 total_figures += 1
                 try:
-                    r = post("%s/modified_uploader" % self.figsplit_url, files={
+                    r = requests.post("%s/modified_uploader" % self.figsplit_url, files={
                         'file': open(join(_folder_path, figure), 'rb')
                     })
                     if r.status_code == 200:

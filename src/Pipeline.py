@@ -41,7 +41,7 @@ class Pipeline:
 
         # Extract figures and captions
         fcx = PDFigCapX(self.chromedriver_path, self.xpdf_pdftohtml_path, self.imagemagick_convert_path)
-        total_elems, total_figs, total_figs_success = fcx.extract(document_folder_path, document_folder_path)
+        pdfs_err_list, total_figs, total_figs_success = fcx.extract(document_folder_path, document_folder_path)
         print("PDFigCapx (%d/%d)\n" % (total_figs_success, total_figs))
         if total_figs_success != total_figs:
             error = "PDFigCapX could not process all the content for %s" % filename

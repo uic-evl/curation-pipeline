@@ -13,7 +13,7 @@ FIGSPLIT_URL = 'https://www.eecis.udel.edu/~compbio/FigSplit'
 
 
 def setup_logger(logger_filepath):
-    logger = logging.getLogger(__name___)
+    logger = logging.getLogger()
     logger.setLevel(logging.INFO)
     formatter = logging.Formatter("%(asctime)s:%(name)s:%(message)s")
 
@@ -54,7 +54,8 @@ def process_folder(_id, input_path, success_filepath, error_filepath,
     output_filepath = success_filepath if sucess else error_filepath
     with open(output_filepath, 'a') as file:
         file.write("{0}\n".format(_id))
-    logger.info(_id, sucess, total_figures, total_figures_splitted)
+    logger.info(
+        f"{_id}\t {sucess}\t {total_figures}\t {total_figures_splitted}")
 
 
 def main():
@@ -77,7 +78,7 @@ def main():
 
     logger = setup_logger(logger_filepath)
     reprocess_ids = read_ids(reprocess_filepath)
-    if len(reprocess_ids == 0):
+    if len(reprocess_ids) == 0:
         logger.error("File with ids to process is empty")
         return
     success_ids = read_ids(success_filepath)
@@ -89,9 +90,9 @@ def main():
         with concurrent.futures.ProcessPoolExecutor() as executor:
             executor.map(process_folder, ids,
                          [args.input] * len(ids),
-                         [success_filepath] * len(ids)
-                         [error_filepath] * len(ids)
-                         [args.logger] * len(ids))
+                         [success_filepath] * len(ids),
+                         [error_filepath] * len(ids),
+                         [logger_filepath] * len(ids))
     except Exception:
         logger.exception("exception caught while batch processing")
     finally:

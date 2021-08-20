@@ -12,7 +12,8 @@ class Task:
         self.token = token
 
     def create_document(self, _folder_path, _entity_id=None):
-        pubmed_id = basename(_folder_path)[1:]
+        # 1: in last pipeline.. check
+        pubmed_id = basename(_folder_path)[0:]
         filename = '%s.pdf' % pubmed_id
         relative_uri = join("/", basename(_folder_path))
         entity_id = _entity_id
@@ -59,9 +60,10 @@ class Task:
 
         # 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
         headers = {'Content-Type': 'application/json',
-                   'Authorization': "Bearer {0}".format(self.token)}        
+                   'Authorization': "Bearer {0}".format(self.token)}
 
-        response = requests.post(self.insert_document_uri, data=data, headers=headers)
+        response = requests.post(
+            self.insert_document_uri, data=data, headers=headers)
 
         if response.status_code == 200:
             return response.json(), None
@@ -79,8 +81,9 @@ class Task:
         })
 
         headers = {'Content-Type': 'application/json',
-            'Authorization': "Bearer {0}".format(self.token)}
-        response = requests.post(self.send_task_uri, data=data, headers=headers)
+                   'Authorization': "Bearer {0}".format(self.token)}
+        response = requests.post(
+            self.send_task_uri, data=data, headers=headers)
 
         if response.status_code == 200:
             return response.json()

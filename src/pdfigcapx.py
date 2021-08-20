@@ -82,12 +82,15 @@ def main():
     logger.info(f'Started processing {len(ids)} files')
 
     try:
-        with concurrent.futures.ProcessPoolExecutor() as executor:
-            executor.map(process_folder, ids,
-                         [args.input] * len(ids),
-                         [success_filepath] * len(ids),
-                         [error_filepath] * len(ids),
-                         [logger_filepath] * len(ids))
+        for _id in ids:
+            process_folder(_id, args.input, success_filepath,
+                           error_filepath, logger_filepath)
+        # with concurrent.futures.ProcessPoolExecutor() as executor:
+        #     executor.map(process_folder, ids,
+        #                  [args.input] * len(ids),
+        #                  [success_filepath] * len(ids),
+        #                  [error_filepath] * len(ids),
+        #                  [logger_filepath] * len(ids))
     except Exception:
         logger.exception("exception caught while batch processing")
     finally:
